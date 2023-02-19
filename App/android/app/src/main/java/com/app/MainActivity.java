@@ -1,5 +1,7 @@
 package com.app;
 
+
+import android.os.Bundle; // react-native-navigation setup
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
@@ -32,4 +34,14 @@ public class MainActivity extends ReactActivity {
         DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
         );
   }
+
+  /*
+    react-native-navigation setup
+   */
+  @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(null);
+  }
+
+
 }
