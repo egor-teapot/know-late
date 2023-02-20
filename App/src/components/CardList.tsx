@@ -9,24 +9,82 @@ import {
 } from 'react-native';
 
 
-type ItemProps = {title: string};
-
-const Item = ({title}: ItemProps) => (
-  <View style={{backgroundColor: "white", marginVertical: 5, marginHorizontal:15, padding: 30, borderRadius: 5}}>
-    <Text style={{color: "black"}}>{title}</Text>
-  </View>
-);
 
 export function CardList({ navigation }):JSX.Element {
+  const DATA = [
+    {
+      title: "testasdfasdfasdfasdfasdfasdfasdfasdfasasdfasdfasdfasdfasdfasdfasdtestasdfasdfasdfasdfasdfasdfasdfasdfasasdfasdfasdfasdfasdfasdfasd",
+      id: "1231231"
+    },   {
+      title: "testasdfasdfasdfasdfasdfasdfasdfasdfasasdfasdfasdfasdfasdfasdfasdtestasdfasdfasdfasdfasdfasdfasdfasdfasasdfasdfasdfasdfasdfasdfasd",
+      id: "1231333"
+    }
+  ];
+  type ItemProps = {title: string};
+
+  const Item = ({title}: ItemProps) => (
+    <View style={{
+      backgroundColor: "white",
+      marginVertical: 5,
+      marginHorizontal:15,
+      // padding: 10,
+      borderRadius: 7,
+      display: 'flex',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      overflow: "hidden",
+      paddingLeft: 20,
+      height: 60,
+      }}>
+      <Text style={{
+        fontSize: 17,
+        color: "black",
+        borderColor: "white",
+        borderWidth: 2,
+        width: "80%",
+        }}
+        numberOfLines={2}
+
+        >{title}</Text>
+      <Pressable
+        style={{
+          width: 30,
+          height: "100%",
+          // padding: 5,
+          borderTopLeftRadius: 5,
+          borderBottomLeftRadius: 5,
+          backgroundColor: "lightgray",
+        }}
+      >
+          <Text
+          style={{
+            // transform: [{rotate: "90deg"}],
+            // margin: 10,
+            color: 'black',
+            // fontSize: 30,
+            textAlign: "center",
+
+            // verticalAlign: "top"
+          }}
+          >...</Text>
+
+      </Pressable>
+    </View>
+  );
+
+
   return(
     <View>
         <TextInput 
         style={{
           height: 40,
           margin: 12,
-          borderWidth: 1,
+          borderBottomWidth: 2,
+          borderColor: "lightgray",
+          // borderLeftWidth: 2,
           padding: 10,
-          borderRadius: 100,
+          // borderRadius: 5,
         }}
         placeholder={"Введите название карточки"}
       />
@@ -72,62 +130,3 @@ export function CardList({ navigation }):JSX.Element {
 
   )
 }
-
-const DATA = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      title: 'First Item',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      title: 'Second Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      title: 'Third Item',
-    },
-  ];

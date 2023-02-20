@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   View,
-  Button,
+  Pressable,
   Text
 } from 'react-native';
 
@@ -15,13 +15,18 @@ export function HomeScreen ({ navigation }) {
             alignItems: "center"
           }}
         >
-            <Button
-              title={"Просмотр карточек"}
-            />
-            <Button
-              title={"Управление карточками"}
-              onPress={ () => {navigation.navigate('CardList')} }
-            />
+          {/* <Pressable>
+            <Text>Просмотр карточек</Text>
+          </Pressable> */}
+          <Pressable
+            style={{
+              padding: 20,
+              backgroundColor: "lightgray"
+            }}
+            onPress={ () => {navigation.navigate('CardList')} }
+          >
+            <Text>Управление карточками</Text>
+          </Pressable>
         </View>
     )
   }

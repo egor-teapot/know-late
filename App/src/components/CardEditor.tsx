@@ -1,15 +1,15 @@
 import React, {useState, Component} from "react"
 import {
     View,
-    Button,
-    TextInput,
-    Text
+    Text,
+    Pressable,
+    ToastAndroid
 } from 'react-native'
 
 import { CardEditorHTML } from "./CardEditorHTML"
 import { WebView, WebViewMessageEvent } from 'react-native-webview'
-import { parseDocument, ElementType } from 'htmlparser2'
-
+import { STORAGE } from "../filesystem/filesystem"
+import RNFS from 'react-native-fs2'
 
 export const CardEditor = () => {
   // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#allowFileAccess
@@ -24,8 +24,39 @@ export const CardEditor = () => {
           console.log(event.nativeEvent.data)} }
         />
       </View>
-        <Button title="front" />
-        <Button title="back" />
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          paddingBottom: 20,
+          paddingTop: 20,
+          justifyContent: "space-around",
+          overflow: "hidden",
+        }}
+      >
+        <Pressable
+          onPress={async () => {
+            // ToastAndroid.show(, ToastAndroid.SHORT)
+            const data = await RNFS.readDir(STORAGE)
+            const parsed = JSON.stringify(data) 
+            console.log(data.map(item => item.name))
+          }}
+        >
+          <Text>Сторона вопроса</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={async () => {
+            RNFS.unlink(await STORAGE+"some.txt")
+            RNFS.writeFile(await STORAGE+"some.txt", "some text", "utf8")
+            // возвращяемая строка закодирована в base64 ее нужно декодировать еще раз
+            console.log(decodeURI(await RNFS.readFile(STORAGE+"some.txt", "utf8")))
+
+          }}
+        >
+          <Text>Сторона ответа</Text>
+        </Pressable>
+      </View>
     </View>
 
   )
