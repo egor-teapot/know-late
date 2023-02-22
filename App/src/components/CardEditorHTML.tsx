@@ -35,20 +35,25 @@ export const CardEditorHTML = `
 </head>
 
 <body>
-    <div id="front" contenteditable="true" spellcheck="false"><h1>HELLO</h1></div>
+    <div id="header" contenteditable="true" spellcheck="false"></div>
+    <div id="front" contenteditable="true" spellcheck="false"></div>
+    <div id="back" contenteditable="true" spellcheck="false"></div>
 </body>
 
 <script>
     
     const front = document.getElementById('front')
+    const back = document.getElementById('back')
 
-    function sendData(data) {
-        window.ReactNativeWebView.postMessage(data)
-    }
 
-    sendData("hello")
-    document.addEventListener('input', () => {
-        sendData(front.innerHTML)
+    front.addEventListener('input', () => {
+        window.ReactNativeWebView.postMessage(front.innerHTML)
+        
+    })
+
+    back.addEventListener('input', () => {
+        window.ReactNativeWebView.postMessage(back.innerHTML)
+        
     })
 
 </script>

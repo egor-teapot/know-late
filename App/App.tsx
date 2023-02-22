@@ -5,6 +5,8 @@
  * @format
  */
 
+
+
 import React from 'react';
 import {
   Pressable, Text, Button
@@ -75,6 +77,8 @@ function App(): JSX.Element {
     </Stack.Navigator>
   </NavigationContainer>
   );
+
 }
 
 export default App;
+
