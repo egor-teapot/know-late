@@ -18,14 +18,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const Stack = createNativeStackNavigator()
 
 import { CardEditor } from './src/components/CardEditor';
+import { CardEditorHTML } from './src/components/CardEditorHTML';
 import { CardList } from './src/components/CardList';
 import { HomeScreen } from './src/components/HomeScreen';
-import { initFS } from './src/filesystem/filesystem';
+import { initFS, createFile, STORAGE } from './src/filesystem/filesystem';
+
+// TODO Организовать глабальное хранилище состояния для карточек
+export const editorState = {useCase: '', viewedPart: 'front', header: '', front: '', back: ''}
 
 
 function App(): JSX.Element {
 
     initFS()
+    createFile(STORAGE+"/cards", "card-1", CardEditorHTML())
+    createFile(STORAGE+"/cards", "card-2", CardEditorHTML())
 
   return (
     <NavigationContainer>
@@ -60,7 +66,9 @@ function App(): JSX.Element {
           headerRight: () => {
           return <Pressable
           onPress={() => {
-            
+            console.log(editorState)
+            // let data = CardEditorHTML(editorState.header, editorState.front, editorState.back)
+            // createFile(STORAGE+"/cards/", "some", data)
           }}
           >
             <Text

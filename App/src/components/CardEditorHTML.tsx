@@ -1,4 +1,5 @@
-export const CardEditorHTML = `
+export const CardEditorHTML = (header='', front='', back='') => {
+return `
 <!DOCTYPE html>
 <html>
 
@@ -35,9 +36,9 @@ export const CardEditorHTML = `
 </head>
 
 <body>
-    <div id="header" contenteditable="true" spellcheck="false"></div>
-    <div id="front" contenteditable="true" spellcheck="false"></div>
-    <div id="back" contenteditable="true" spellcheck="false"></div>
+    <div id="header" contenteditable="true" spellcheck="false">${header}</div>
+    <div id="front" contenteditable="true" spellcheck="false">${front}</div>
+    <div id="back" contenteditable="true" spellcheck="false">${back}</div>
 </body>
 
 <script>
@@ -59,8 +60,8 @@ export const CardEditorHTML = `
 </script>
 
 </html>
-
 `
+}
 
 /*
 

@@ -15,8 +15,8 @@ import { CardEditorHTML } from "./CardEditorHTML"
 import { WebView, WebViewMessageEvent} from 'react-native-webview'
 import { STORAGE } from "../filesystem/filesystem"
 import RNFS from 'react-native-fs2'
+import { editorState } from "../../App"
 
-const editorState = {useCase: '', viewedPart: 'front', header: '', front: '', back: ''}
 /*
 Этот обьект описывает работу с состоянием карточки
 
@@ -73,7 +73,7 @@ export const CardEditor = () => {
       <View style={{flex: 1, width: "100%", height:"100%"}}>
         <WebView
         ref={(ref) => {WebViewRef = ref}}
-        source={{ html: CardEditorHTML }} 
+        source={{ html: CardEditorHTML() }} 
         setBuiltInZoomControls={false}
         injectedJavaScript={handleWebViewReload(viewState, editorState)}
         onMessage={ (event) => {

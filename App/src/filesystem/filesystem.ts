@@ -9,7 +9,7 @@ export const initFS = () => {
 }
 
 // Воводит список элементов в указанной папке
-export const listFolderElements = (path:string = "") => {
+export const readFolderElements = (path:string = "") => {
     return RNFS.readDir(STORAGE + `${path}`)
 }
 
