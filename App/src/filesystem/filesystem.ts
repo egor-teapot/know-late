@@ -5,7 +5,7 @@ export const STORAGE:string = String(RNFS.ExternalDirectoryPath + "/")
 
 // создает папку для хранения карточек
 export const initFS = () => {
-    RNFS.mkdir(STORAGE + "/cards")
+    RNFS.mkdir(STORAGE + "cards")
 }
 
 // Воводит список элементов в указанной папке
@@ -15,10 +15,14 @@ export const readFolderElements = (path:string = "") => {
 
 // читает файл
 export const readFile = (name:string) => {
-    return RNFS.readFile(STORAGE + `/${name}`) // может читать utf8
+    return RNFS.readFile(STORAGE + `${name}`) // может читать utf8
 }
 
 // создает файл
 export const createFile = (path:string, name:string, data:string) => {
-    RNFS.writeFile(path + `/${name}`, data)
+    RNFS.writeFile(path + `${name}`, data, 'utf8')
+}
+
+export const removeFile = (path:string) => {
+    RNFS.unlink(STORAGE + path)
 }

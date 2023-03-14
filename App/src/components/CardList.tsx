@@ -1,5 +1,5 @@
 
-import { readFolderElements, STORAGE } from '../filesystem/filesystem';
+import { readFolderElements, STORAGE, readFile } from '../filesystem/filesystem';
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -9,59 +9,72 @@ import {
   Pressable,
   TextInput,
 } from 'react-native';
+import { CardEditorHTML } from './CardEditorHTML';
 
 type ItemProps = {title: string};
 
 
 const Item = ({title}: ItemProps) => (
-  <View style={{
-    backgroundColor: "white",
-    marginVertical: 5,
-    marginHorizontal:15,
-    // padding: 10,
-    borderRadius: 7,
-    display: 'flex',
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    overflow: "hidden",
-    paddingLeft: 20,
-    height: 60,
-    }}>
-    <Text style={{
-      fontSize: 17,
-      color: "black",
-      borderColor: "white",
-      borderWidth: 2,
-      width: "80%",
-      }}
-      numberOfLines={2}
+  <Pressable
+    onPress={async () => {
+      console.log(await readFile(`cards/${title}`))
 
-      >{title}</Text>
-    <Pressable
-      style={{
-        width: 30,
-        height: "100%",
-        // padding: 5,
-        borderTopLeftRadius: 5,
-        borderBottomLeftRadius: 5,
-        backgroundColor: "lightgray",
-      }}
-    >
-        <Text
-        style={{
-          // transform: [{rotate: "90deg"}],
-          // margin: 10,
-          color: 'black',
-          // fontSize: 30,
-          textAlign: "center",
 
-          // verticalAlign: "top"
+      // console.log((await readFolderElements('cards')).map(item => item.name))
+    }}
+  >
+      <View style={{
+      backgroundColor: "white",
+      marginVertical: 5,
+      marginHorizontal:15,
+      // padding: 10,
+      borderRadius: 7,
+      display: 'flex',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      overflow: "hidden",
+      paddingLeft: 20,
+      height: 60,
+      }}>
+      <Text style={{
+        fontSize: 17,
+        color: "black",
+        borderColor: "white",
+        borderWidth: 2,
+        width: "80%",
         }}
-        >...</Text>
+        numberOfLines={2}
 
-    </Pressable>
-  </View>
+        >{title}</Text>
+      <Pressable
+        style={{
+          width: 30,
+          height: "100%",
+          // padding: 5,
+          borderTopLeftRadius: 5,
+          borderBottomLeftRadius: 5,
+          backgroundColor: "lightgray",
+        }}
+      >
+        {/* TODO: В место текста использовать svg */}
+          <Text
+          style={{
+            // transform: [{rotate: "90deg"}],
+            // margin: 10,
+            color: 'black',
+            // fontSize: 30,
+            textAlign: "center",
+
+            // verticalAlign: "top"
+          }}
+          >...</Text>
+
+      </Pressable>
+    </View>
+  </Pressable>
+  
+  
 );
 
 

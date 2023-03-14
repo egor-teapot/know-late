@@ -21,7 +21,7 @@ import { CardEditor } from './src/components/CardEditor';
 import { CardEditorHTML } from './src/components/CardEditorHTML';
 import { CardList } from './src/components/CardList';
 import { HomeScreen } from './src/components/HomeScreen';
-import { initFS, createFile, STORAGE } from './src/filesystem/filesystem';
+import { initFS, createFile, STORAGE, readFile, removeFile } from './src/filesystem/filesystem';
 
 // TODO Организовать глабальное хранилище состояния для карточек
 export const editorState = {useCase: '', viewedPart: 'front', header: '', front: '', back: ''}
@@ -30,7 +30,8 @@ export const editorState = {useCase: '', viewedPart: 'front', header: '', front:
 function App(): JSX.Element {
 
     initFS()
-    createFile(STORAGE+"/cards", "card-1", CardEditorHTML())
+    removeFile('cards/card-1')
+    createFile(STORAGE+"/cards", "/card-1", CardEditorHTML('test', 'какого цвета яблоки?', 'красного'))
     createFile(STORAGE+"/cards", "card-2", CardEditorHTML())
 
   return (
