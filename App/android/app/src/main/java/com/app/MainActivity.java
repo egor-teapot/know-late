@@ -1,4 +1,4 @@
-package com.app;
+package com.knowlate;
 
 
 import android.os.Bundle; // react-native-navigation setup

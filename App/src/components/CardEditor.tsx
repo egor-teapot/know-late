@@ -13,8 +13,8 @@ import {
 
 import { CardEditorHTML } from "./CardEditorHTML"
 import { WebView, WebViewMessageEvent} from 'react-native-webview'
-import { STORAGE } from "../filesystem/filesystem"
-import RNFS from 'react-native-fs2'
+// import { STORAGE } from "../filesystem/filesystem"
+// import RNFS from 'react-native-fs2'
 import { editorState } from "../../App"
 
 /*

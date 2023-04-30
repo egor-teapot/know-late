@@ -21,18 +21,28 @@ import { CardEditor } from './src/components/CardEditor';
 import { CardEditorHTML } from './src/components/CardEditorHTML';
 import { CardList } from './src/components/CardList';
 import { HomeScreen } from './src/components/HomeScreen';
-import { initFS, createFile, STORAGE, readFile, removeFile } from './src/filesystem/filesystem';
+import { initFS, createFile, /*STORAGE,*/ removeFile } from './src/filesystem/filesystem'; // refactor
+import { STORAGE } from './src/utils'
+
+import { writeFile, readFile } from 'react-native-fs'
+
+
 
 // TODO Организовать глабальное хранилище состояния для карточек
 export const editorState = {useCase: '', viewedPart: 'front', header: '', front: '', back: ''}
 
 
+
+
 function App(): JSX.Element {
 
-    initFS()
-    removeFile('cards/card-1')
-    createFile(STORAGE+"/cards", "/card-1", CardEditorHTML('test', 'какого цвета яблоки?', 'красного'))
-    createFile(STORAGE+"/cards", "card-2", CardEditorHTML())
+    // initFS()
+    // removeFile('cards/card-1')
+    console.log(STORAGE)
+    writeFile(STORAGE+"/card-1", CardEditorHTML('test', 'какого цвета яблоки?', 'красного'))
+    readFile(STORAGE+'/card-1').then(data => console.log(data))
+    // createFile(STORAGE+"/cards", "/card-1", CardEditorHTML('test', 'какого цвета яблоки?', 'красного'))
+    // createFile(STORAGE+"/cards", "card-2", CardEditorHTML())
 
   return (
     <NavigationContainer>

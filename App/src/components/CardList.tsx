@@ -1,5 +1,5 @@
 
-import { readFolderElements, STORAGE, readFile } from '../filesystem/filesystem';
+import { readFolderElements, /*STORAGE,*/ readFile } from '../filesystem/filesystem'; // refactor
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -11,13 +11,14 @@ import {
 } from 'react-native';
 import { CardEditorHTML } from './CardEditorHTML';
 
+
 type ItemProps = {title: string};
 
 
 const Item = ({title}: ItemProps) => (
   <Pressable
     onPress={async () => {
-      console.log(await readFile(`cards/${title}`))
+      console.log(await readFile(`cards/${title}`)) // refactor
 
 
       // console.log((await readFolderElements('cards')).map(item => item.name))
@@ -84,7 +85,7 @@ const Item = ({title}: ItemProps) => (
   // setData([{name: "some"}])
   
 // возвращает массив с именами файлов и папок
-const cadrsFolderElements = async () => await readFolderElements('/cards')
+const cadrsFolderElements = async () => await readFolderElements('/cards') // refactor
 
 // const elementList = [{name: "test 1"}] 
 
@@ -95,7 +96,7 @@ export function CardList({ navigation }):JSX.Element {
 
   // useEffect re-render error
   // https://typeofnan.dev/fix-the-maximum-update-depth-exceeded-error-in-react/
-  useEffect(() => {
+  useEffect(() => { // refactor
     console.log("CardList screen updated")
 
     const handleAsync = async () => {
