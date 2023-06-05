@@ -21,28 +21,35 @@ import { CardEditor } from './src/components/CardEditor';
 import { CardEditorHTML } from './src/components/CardEditorHTML';
 import { CardList } from './src/components/CardList';
 import { HomeScreen } from './src/components/HomeScreen';
-import { initFS, createFile, /*STORAGE,*/ removeFile } from './src/filesystem/filesystem'; // refactor
-import { STORAGE } from './src/utils'
+import { CardAnswering } from './src/components/CardAnswering';
+// import { initFS, createFile, /*STORAGE,*/ removeFile } from './src/filesystem/filesystem'; // refactor
 
-import { writeFile, readFile } from 'react-native-fs'
-
-
+import { writeFile, readFile, DocumentDirectoryPath, mkdir, readDir } from 'react-native-fs'
 
 // TODO Организовать глабальное хранилище состояния для карточек
-export const editorState = {useCase: '', viewedPart: 'front', header: '', front: '', back: ''}
+export const editorState = {cardNew: "", viewedPart: 'front', header: '', front: '', back: ''}
+
+import { getDBConnection, createCardsTable, insertNewCard, selectAllCards } from './src/db';
+
+const initFs = async () => {
+  try {
+    mkdir(DocumentDirectoryPath + "/cards")
+    const db = await getDBConnection()
+    await createCardsTable(db)
+    
+    console.log("APP FILESYSTEM CREATED")
+  } catch(err) {
+    console.log("ERROR WHIE INITIALIZING APP FS")
+  }
+}
 
 
 
 
 function App(): JSX.Element {
+  console.log("APP STARTED")
+  initFs()
 
-    // initFS()
-    // removeFile('cards/card-1')
-    console.log(STORAGE)
-    writeFile(STORAGE+"/card-1", CardEditorHTML('test', 'какого цвета яблоки?', 'красного'))
-    readFile(STORAGE+'/card-1').then(data => console.log(data))
-    // createFile(STORAGE+"/cards", "/card-1", CardEditorHTML('test', 'какого цвета яблоки?', 'красного'))
-    // createFile(STORAGE+"/cards", "card-2", CardEditorHTML())
 
   return (
     <NavigationContainer>
@@ -68,6 +75,13 @@ function App(): JSX.Element {
         }}
 
       />
+
+      <Stack.Screen
+        name="CardAnswering"
+        component={CardAnswering}
+        options={{headerShown: false}}
+      />
+
       <Stack.Screen
         name="CardEditor"
         component={CardEditor}
@@ -76,15 +90,34 @@ function App(): JSX.Element {
 
           headerRight: () => {
           return <Pressable
-          onPress={() => {
-            console.log(editorState)
-            // let data = CardEditorHTML(editorState.header, editorState.front, editorState.back)
-            // createFile(STORAGE+"/cards/", "some", data)
-          }}
+
+          onPress={async () => {
+            const createCard = async () => {
+              const randomDigitByLength = (diginLength: Number) => {
+                let emptyString = ""
+                
+                for (let i = 0; i < diginLength; i++) {
+                  emptyString += Math.floor(Math.random() * 9)
+                }
+
+                return emptyString
+              } // randomDigitByLength
+              const id = randomDigitByLength(16)
+              const db = await getDBConnection()
+              let dateOfAnswer = new Date()
+              let dateOfNextAnswer = new Date()
+
+              dateOfNextAnswer.setDate(dateOfNextAnswer.getDate() + 10)
+
+              insertNewCard(db, id, "none", dateOfAnswer.toString(), dateOfNextAnswer.toString(), 1, `${editorState.header}`)
+              await writeFile(DocumentDirectoryPath + `/cards/${id}.html`, CardEditorHTML(editorState.header, editorState.front, editorState.back), "utf8")
+            }; createCard()
+          }} // onPress
           >
             <Text
               style={{
-                fontSize: 20
+                fontSize: 20,
+                color: "black"
               }}
             >Сохранить</Text>
           </Pressable>

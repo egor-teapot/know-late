@@ -12,21 +12,35 @@ export function HomeScreen ({ navigation }) {
             backgroundColor: "white",
             height: "100%",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            gap: 20
           }}
         >
-          {/* <Pressable>
-            <Text>Просмотр карточек</Text>
-          </Pressable> */}
+
           <Pressable
             style={{
               padding: 20,
-              backgroundColor: "lightgray"
+              backgroundColor: "orange",
+              minWidth: 200,
+              alignItems: "center"
+            }}
+            onPress={ () => {navigation.navigate('CardAnswering')} }
+          >
+            <Text>Играть</Text>
+          </Pressable>
+
+          <Pressable
+            style={{
+              padding: 20,
+              backgroundColor: "orange",
+              minWidth: 200,
             }}
             onPress={ () => {navigation.navigate('CardList')} }
           >
             <Text>Управление карточками</Text>
           </Pressable>
+
+
         </View>
     )
   }

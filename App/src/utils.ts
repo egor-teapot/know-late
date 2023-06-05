@@ -1,5 +1,5 @@
 import {
-    ExternalDirectoryPath
+    DocumentDirectoryPath
 } from 'react-native-fs'
 
-export const STORAGE = ExternalDirectoryPath
+export const STORAGE = DocumentDirectoryPath

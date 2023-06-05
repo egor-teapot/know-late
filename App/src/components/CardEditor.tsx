@@ -65,9 +65,11 @@ export const CardEditor = () => {
     <View style={{flex: 1, width: "100%", height:"100%"}}>
       <TextInput
         style={{
-          fontSize: 15
+          fontSize: 15,
+          color: "black"
         }}
         placeholder="Название карточки"
+        placeholderTextColor={"gray"}
         onChangeText={text => editorState.header = text}
       />
       <View style={{flex: 1, width: "100%", height:"100%"}}>
@@ -93,6 +95,7 @@ export const CardEditor = () => {
           overflow: "hidden",
           paddingBottom: 20,
           paddingTop: 20,
+          backgroundColor: "orange"
         }}
       >
         <Pressable
@@ -116,14 +119,6 @@ export const CardEditor = () => {
         >
           <Text>Сторона ответа</Text>
         </Pressable>
-        {/* <Pressable
-          onPress={() => {
-            console.log(editorState)
-
-          }}
-        >
-          <Text>Логировать состояние</Text>
-        </Pressable> */}
       </View>
     </View>
 

@@ -1,5 +1,6 @@
 
-import { readFolderElements, /*STORAGE,*/ readFile } from '../filesystem/filesystem'; // refactor
+// import { readFolderElements, /*STORAGE,*/ readFile } from '../filesystem/filesystem'; // refactor
+import { readDir, DocumentDirectoryPath } from "react-native-fs"
 import React, {useState, useEffect} from 'react';
 import {
   View,
@@ -11,6 +12,7 @@ import {
 } from 'react-native';
 import { CardEditorHTML } from './CardEditorHTML';
 
+import { selectAllCards, getDBConnection } from "../db";
 
 type ItemProps = {title: string};
 
@@ -18,7 +20,7 @@ type ItemProps = {title: string};
 const Item = ({title}: ItemProps) => (
   <Pressable
     onPress={async () => {
-      console.log(await readFile(`cards/${title}`)) // refactor
+      // console.log(await readFile(DocumentDirectoryPath + `cards/${title}`)) // refactor
 
 
       // console.log((await readFolderElements('cards')).map(item => item.name))
@@ -85,24 +87,38 @@ const Item = ({title}: ItemProps) => (
   // setData([{name: "some"}])
   
 // возвращает массив с именами файлов и папок
-const cadrsFolderElements = async () => await readFolderElements('/cards') // refactor
+// const cadrsFolderElements = async () => await readFolderElements('/cards') // refactor
+
+// cadrsFolderElements()
 
 // const elementList = [{name: "test 1"}] 
+
 
 export function CardList({ navigation }):JSX.Element {
 
   // добавить тип данных к массиву чтоб он не ругался
   const [data, setData] = useState([])
+  const [cardsList, setCardsList] = useState({})
 
   // useEffect re-render error
   // https://typeofnan.dev/fix-the-maximum-update-depth-exceeded-error-in-react/
+
   useEffect(() => { // refactor
     console.log("CardList screen updated")
 
+
     const handleAsync = async () => {
-      const newData = await cadrsFolderElements()
+      console.log("UPDATET CARDLIST FRAME")
+      const db = await getDBConnection()
+      const some = await selectAllCards(db)
+
+      // console.log(cardsList["4160027771706870"])
+      
+      const newData = (await readDir(DocumentDirectoryPath + "/cards")).map(item => item.name)
       setData((data) => [...newData])
+      setCardsList((cardsList) => some) 
     }
+    
     handleAsync()
   }, [])
 
@@ -122,16 +138,13 @@ export function CardList({ navigation }):JSX.Element {
         placeholder={"Введите название карточки"}
       />
       <ScrollView>
-        {/* <ScrollView
-          style={{paddingBottom:230}}
-        > */}
           <View>
           <View>
             {/* 
             FlatList 
             https://stackoverflow.com/questions/67623952/error-virtualizedlists-should-never-be-nested-inside-plain-scrollviews-with-th */}
             {
-              data.map(item => <Item title={item.name} />)
+              data.map((item, index) => <Item key={Number(item.slice(0, -5))} title={ cardsList[item.slice(0, -5)]?.title } />)
             }
             </View>
           </View>
