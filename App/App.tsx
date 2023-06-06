@@ -27,7 +27,7 @@ import { CardAnswering } from './src/components/CardAnswering';
 import { writeFile, readFile, DocumentDirectoryPath, mkdir, readDir } from 'react-native-fs'
 
 // TODO Организовать глабальное хранилище состояния для карточек
-export const editorState = {cardNew: "", viewedPart: 'front', header: '', front: '', back: ''}
+export const editorState = {case: "",  viewedPart: 'front', hash: "", header: '', front: '', back: ''}
 
 import { getDBConnection, createCardsTable, insertNewCard, selectAllCards } from './src/db';
 

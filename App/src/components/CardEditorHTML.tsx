@@ -62,27 +62,3 @@ return `
 </html>
 `
 }
-
-/*
-
-    <div id="back" contenteditable="true" spellcheck="false">Sup</div>
-
-
-
-<script>
-    
-    const observer = new MutationObserver(mutations => {
-        window.ReactNativeWebView.postMessage(textEditor.innerHTML)
-    })
-    observer.observe(textEditor, {
-        childList: true,
-        attributes: true,
-        characterData: true,
-        subtree: true,
-    })
-</script>
-
-
-
-
- */
