@@ -1,29 +1,30 @@
 
 // import { readFolderElements, /*STORAGE,*/ readFile } from '../filesystem/filesystem'; // refactor
-import { readDir, DocumentDirectoryPath } from "react-native-fs"
-import React, {useState, useEffect} from 'react';
+import { readDir, DocumentDirectoryPath, readFile } from "react-native-fs"
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
   ScrollView,
-  FlatList,
   Pressable,
-  TextInput,
 } from 'react-native';
 import { CardEditorHTML } from './CardEditorHTML';
 
-import { selectAllCards, getDBConnection } from "../db";
+import { selectAllCards, getDBConnection, deleteFromCards } from "../db";
+import { editorState } from "../../App";
+let clickedCardHash = ""
+
 
 type ItemProps = {title: string};
 
 
-const Item = ({title}: ItemProps) => (
+const Item = ({ navigation, title, hash, setState, state }):JSX.Element => (
   <Pressable
-    onPress={async () => {
-      // console.log(await readFile(DocumentDirectoryPath + `cards/${title}`)) // refactor
-
-
-      // console.log((await readFolderElements('cards')).map(item => item.name))
+    onPress={() => {
+      editorState.hash = hash
+      editorState.header = title
+      editorState.case = "edit"
+      navigation.navigate("CardEditor")
     }}
   >
       <View style={{
@@ -59,17 +60,16 @@ const Item = ({title}: ItemProps) => (
           borderBottomLeftRadius: 5,
           backgroundColor: "lightgray",
         }}
+        onPress={() => {
+          setState(!state)
+          clickedCardHash = hash
+        }}
       >
-        {/* TODO: В место текста использовать svg */}
           <Text
           style={{
-            // transform: [{rotate: "90deg"}],
-            // margin: 10,
             color: 'black',
-            // fontSize: 30,
             textAlign: "center",
 
-            // verticalAlign: "top"
           }}
           >...</Text>
 
@@ -81,71 +81,38 @@ const Item = ({title}: ItemProps) => (
 );
 
 
-
- 
-  
-  // setData([{name: "some"}])
-  
-// возвращает массив с именами файлов и папок
-// const cadrsFolderElements = async () => await readFolderElements('/cards') // refactor
-
-// cadrsFolderElements()
-
-// const elementList = [{name: "test 1"}] 
-
-
 export function CardList({ navigation }):JSX.Element {
 
   // добавить тип данных к массиву чтоб он не ругался
   const [data, setData] = useState([])
   const [cardsList, setCardsList] = useState({})
-
-  // useEffect re-render error
-  // https://typeofnan.dev/fix-the-maximum-update-depth-exceeded-error-in-react/
+  const [cardModalState, setCardModalState] = useState(false)
 
   useEffect(() => { // refactor
     console.log("CardList screen updated")
 
-
     const handleAsync = async () => {
       console.log("UPDATET CARDLIST FRAME")
       const db = await getDBConnection()
-      const some = await selectAllCards(db)
-
-      // console.log(cardsList["4160027771706870"])
+      const cardsArray = await selectAllCards(db)
       
       const newData = (await readDir(DocumentDirectoryPath + "/cards")).map(item => item.name)
-      setData((data) => [...newData])
-      setCardsList((cardsList) => some) 
+      setData(newData)
+      setCardsList(cardsArray)
+      console.log(Object.keys(cardsArray).forEach(i => `${cardsArray[i].title} >> ${cardsArray[i].hash} \n `))
     }
     
     handleAsync()
+    
   }, [])
 
 
   return(
     <View>
-        <TextInput 
-        style={{
-          height: 40,
-          margin: 12,
-          borderBottomWidth: 2,
-          borderColor: "lightgray",
-          // borderLeftWidth: 2,
-          padding: 10,
-          // borderRadius: 5,
-        }}
-        placeholder={"Введите название карточки"}
-      />
       <ScrollView>
           <View>
           <View>
-            {/* 
-            FlatList 
-            https://stackoverflow.com/questions/67623952/error-virtualizedlists-should-never-be-nested-inside-plain-scrollviews-with-th */}
-            {
-              data.map((item, index) => <Item key={Number(item.slice(0, -5))} title={ cardsList[item.slice(0, -5)]?.title } />)
-            }
+            {data.map((item, index) => <Item key={index} title={ cardsList[item.slice(0, -5)]?.title } setState={setCardModalState} state={cardModalState} hash={item.slice(0, -5)} navigation={navigation} />)}
             </View>
           </View>
 
@@ -158,9 +125,16 @@ export function CardList({ navigation }):JSX.Element {
                   borderStyle: "dashed",
                   margin: 15,
                   borderRadius: 5,
-                  // backgroundColor: "white"
                 }}
-                onPress={()=>{navigation.navigate("CardEditor")}}
+                
+                onPress={()=>{
+                  editorState.header = ""
+                  editorState.front = ""
+                  editorState.back = ""
+                  editorState.hash = ""
+                  editorState.case = "create"
+                  navigation.navigate("CardEditor")
+                }}
               >
                 <Text style={{textAlign: "center", color: "gray"}}>Добавить карточку</Text>
               </Pressable>
@@ -168,6 +142,61 @@ export function CardList({ navigation }):JSX.Element {
 
         {/* </ScrollView> */}
       </ScrollView>
+      {cardModalState?
+        <View
+        style={{
+          position: "absolute",
+          zIndex: 10,
+          width: "70%",
+          alignItems: "center",
+          alignSelf: "center",
+          backgroundColor: "gray",
+          gap: 40,
+          paddingVertical: 40,
+          borderRadius: 12,
+        }}
+        >
+        <Pressable
+        style={{
+          width: "100%",
+          alignItems: "center",
+        }}
+          onPress={() => {
+
+            const handleAsync = async () => {
+              try {
+                const db = await getDBConnection()
+                deleteFromCards(db, clickedCardHash)
+    
+              } catch(err) {
+                console.log("ошибка при удалении карточки")
+              }
+              
+            }; handleAsync()
+
+            setCardModalState(false)
+          }}
+        >
+          <Text
+            style={{fontSize: 25}}
+          >Удалить карточку</Text>
+        </Pressable>
+        <Pressable
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                }}
+        >
+          <Text
+            style={{fontSize: 25}}
+          >Изменить категорию</Text>
+        </Pressable>
+        </View>
+
+      :
+      
+      null
+      }
     </View>
 
   )

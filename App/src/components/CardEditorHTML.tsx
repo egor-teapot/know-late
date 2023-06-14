@@ -41,21 +41,27 @@ return `
     <div id="back" contenteditable="true" spellcheck="false">${back}</div>
 </body>
 
-<script>
-    
+<script>    
+    const header = document.getElementById('header')
     const front = document.getElementById('front')
     const back = document.getElementById('back')
 
+    let getCardData = () => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({"header": header.innerHTML, "front": front.innerHTML, "back": back.innerHTML}) );
+    }
 
     front.addEventListener('input', () => {
-        window.ReactNativeWebView.postMessage(front.innerHTML)
-        
+        // window.ReactNativeWebView.postMessage(front.innerHTML)
+        getCardData()
     })
 
     back.addEventListener('input', () => {
-        window.ReactNativeWebView.postMessage(back.innerHTML)
-        
+        // window.ReactNativeWebView.postMessage(back.innerHTML)
+        getCardData()
     })
+
+
+
 
 </script>
 

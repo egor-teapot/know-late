@@ -1,90 +1,91 @@
-// https://stackoverflow.com/questions/67755775/how-do-i-create-a-proper-text-editor-in-react-native
-// https://meliorence.github.io/react-native-render-html/docs/reinvent-the-wheel
-
-
-import React, {useState} from "react"
+import React, {useEffect, useState, useRef} from "react"
 import {
     View,
     Text,
     Pressable,
-    ToastAndroid,
     TextInput
 } from 'react-native'
 
 import { CardEditorHTML } from "./CardEditorHTML"
-import { WebView, WebViewMessageEvent} from 'react-native-webview'
-// import { STORAGE } from "../filesystem/filesystem"
-// import RNFS from 'react-native-fs2'
+import { WebView } from 'react-native-webview'
 import { editorState } from "../../App"
+import { readFile, DocumentDirectoryPath } from "react-native-fs"
 
-/*
-Этот обьект описывает работу с состоянием карточки
-
-useCase - может принимать стостояния edit или view.
-при состоянии edit элемент с id header прячется,
-и отображается только один элемент из front и back(по умолчанию: front).
-При состоянии view отображается элементы с id header и front
-
-viewedPart - дефолтная сторона при редактировании карточки
-
-header - хранит innerHTML элемента с id header
-
-front - хранит innerHTML элемента с id front
-
-back - хранит innerHTML элемента с id back
-*/
-
-
+let WebViewRef:null
 
 export const CardEditor = () => {
-  // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#allowFileAccess
-  
-  const [viewState, setViewState] = useState('front')
+    
+    const [cardData, setCardData] = useState(CardEditorHTML())
 
-  const handleWebViewReload = (viewedPart:string, data:string) => {
-    if (viewedPart === 'front') {
-      return `
-      document.getElementById('header').style.display = 'none'
-      document.getElementById('back').style.display = 'none'
-      document.getElementById('front').style.display = ''
-      document.getElementById('front').innerHTML = "${data.front}"`
-    }
-  
-    if (viewedPart === 'back') {
-      return `
-      document.getElementById('header').style.display = 'none'
-      document.getElementById('back').style.display = ''
-      document.getElementById('front').style.display = 'none'
-      document.getElementById('back').innerHTML = "${data.back}"`
-    }
-  }
 
-  let WebViewRef:null
+    useEffect(() => {
 
-  return(
-    <View style={{flex: 1, width: "100%", height:"100%"}}>
+      const handleAsync = async () => {
+        if(editorState.case == "edit" && editorState.hash != "") {
+          const data = await readFile(DocumentDirectoryPath + `/cards/${editorState.hash}.html`) 
+          setCardData(data)
+        }
+
+      }; handleAsync()
+    })
+    
+    return(
+      <View style={{flex: 1, width: "100%", height:"100%"}}>
       <TextInput
         style={{
-          fontSize: 15,
-          color: "black"
+          fontSize: 25,
+          color: "#DD0000",
+          backgroundColor: "#FFBB6C"
         }}
+        defaultValue={editorState.header}
         placeholder="Название карточки"
-        placeholderTextColor={"gray"}
-        onChangeText={text => editorState.header = text}
+        placeholderTextColor={"#B95F5F"}
+        onChangeText={text => {
+          editorState.header = text
+          
+          console.log(editorState)
+        }}
       />
       <View style={{flex: 1, width: "100%", height:"100%"}}>
-        <WebView
-        ref={(ref) => {WebViewRef = ref}}
-        source={{ html: CardEditorHTML() }} 
-        setBuiltInZoomControls={false}
-        injectedJavaScript={handleWebViewReload(viewState, editorState)}
-        onMessage={ (event) => {
-          const data = event.nativeEvent.data
-          // editorState.front = data.front
-          if(editorState.viewedPart === 'front') editorState.front = data
-          if(editorState.viewedPart === 'back') editorState.back = data
 
-        }}
+      <View style={{flex: 1, width: "100%", height:"100%"}}>
+        <WebView
+          ref={(ref) => {WebViewRef = ref}}
+          setBuiltInZoomControls={false}
+          source={{html: cardData}}
+          onLoad={() => {
+              WebViewRef.injectJavaScript(`
+              getCardData()
+
+              document.getElementById('header').style.position = "absolute"
+              document.getElementById('header').style.visibility = "hidden"
+              document.getElementById('header').style.zIndex = -1
+            `)
+            } // arrow fun
+          } // onLoad
+          onLoadStart={() => {
+            WebViewRef.injectJavaScript(`
+
+            document.getElementById('header').style.position = "absolute"
+            document.getElementById('header').style.visibility = "hidden"
+            document.getElementById('header').style.zIndex = -1
+
+            document.getElementById('back').style.position = "absolute"
+            document.getElementById('back').style.visibility = "hidden"
+            document.getElementById('back').style.zIndex = -1
+            `)
+          }}
+
+          onMessage={(event) => {
+            const data = event.nativeEvent.data
+            const parsed = JSON.parse(data)
+            
+            editorState.front = parsed.front
+            editorState.back = parsed.back
+            if(editorState.header == "") editorState.header = parsed.header
+
+            console.log(editorState)
+          }}
         />
       </View>
       <View
@@ -95,32 +96,78 @@ export const CardEditor = () => {
           overflow: "hidden",
           paddingBottom: 20,
           paddingTop: 20,
-          backgroundColor: "orange"
+          backgroundColor: "#37B872"
         }}
       >
         <Pressable
           onPress={async () => {
-            if (viewState === 'front') return
-            setViewState('front')
             editorState.viewedPart = 'front'
-            WebViewRef.reload()
+            WebViewRef.injectJavaScript(`
+              document.getElementById('header').style.position = "absolute"
+              document.getElementById('header').style.visibility = "hidden"
+              document.getElementById('header').style.zIndex = -1
+
+              document.getElementById('front').style.position = "static"
+              document.getElementById('front').style.visibility = "visible"
+              document.getElementById('front').style.zIndex = 1
+              
+              document.getElementById('back').style.position = "absolute"
+              document.getElementById('back').style.visibility = "hidden"
+              document.getElementById('back').style.zIndex = -1
+              
+              document.getElementById('front').innerHTML = "${editorState.front}"
+            `)
           }}
         >
-          <Text>Сторона вопроса</Text>
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 25
+            }}
+          >Вопрос</Text>
         </Pressable>
 
         <Pressable
           onPress={() => {
-            if (viewState === 'back') return
-            setViewState('back')
-            editorState.viewedPart = 'back'
-            WebViewRef.reload()
+
+
           }}
         >
-          <Text>Сторона ответа</Text>
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 25
+            }}
+          >...</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => {
+            editorState.viewedPart = 'back'
+            WebViewRef.injectJavaScript(`
+              document.getElementById('header').style.display = 'none'
+
+              document.getElementById('back').style.position = "static"
+              document.getElementById('back').style.visibility = "visible"
+              document.getElementById('back').style.zIndex = 1
+              
+              document.getElementById('front').style.position = "absolute"
+              document.getElementById('front').style.visibility = "hidden"
+              document.getElementById('front').style.zIndex = -1
+
+              document.getElementById('back').innerHTML = "${editorState.back}"
+            `)
+          }}
+        >
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 25
+            }}
+          >Ответ</Text>
         </Pressable>
       </View>
     </View>
-
+    </View>
   )
 }

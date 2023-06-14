@@ -9,7 +9,7 @@
 
 import React from 'react';
 import {
-  Pressable, Text, Button
+  Pressable, Text
 } from 'react-native'
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,46 +18,53 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const Stack = createNativeStackNavigator()
 
 import { CardEditor } from './src/components/CardEditor';
-import { CardEditorHTML } from './src/components/CardEditorHTML';
 import { CardList } from './src/components/CardList';
 import { HomeScreen } from './src/components/HomeScreen';
 import { CardAnswering } from './src/components/CardAnswering';
-// import { initFS, createFile, /*STORAGE,*/ removeFile } from './src/filesystem/filesystem'; // refactor
+import {
+  getDBConnection,
+  createCardsTable,
+} from './src/db';
 
-import { writeFile, readFile, DocumentDirectoryPath, mkdir, readDir } from 'react-native-fs'
+import { DocumentDirectoryPath, mkdir, } from 'react-native-fs'
 
-// TODO Организовать глабальное хранилище состояния для карточек
-export const editorState = {case: "",  viewedPart: 'front', hash: "", header: '', front: '', back: ''}
+import { checkAwaitingCards, createNewCard, editCard } from './src/utils';
 
-import { getDBConnection, createCardsTable, insertNewCard, selectAllCards } from './src/db';
+export const editorState = {case: "create",  viewedPart: 'front', hash: "", header: '', front: '', back: ''}
+export let cardsAwaitingState = []
 
 const initFs = async () => {
   try {
     mkdir(DocumentDirectoryPath + "/cards")
     const db = await getDBConnection()
     await createCardsTable(db)
-    
+
     console.log("APP FILESYSTEM CREATED")
   } catch(err) {
     console.log("ERROR WHIE INITIALIZING APP FS")
   }
 }
 
+const checkCards = async () => {
+  try {
+    const db = await getDBConnection()
+    const data = await checkAwaitingCards(db)
+    
+    cardsAwaitingState = [...data]
+    console.log(cardsAwaitingState)
+  } catch(err) {
+    console.log("нед доступных карт для повторения")
+  }
 
-
+}
 
 function App(): JSX.Element {
   console.log("APP STARTED")
   initFs()
-
+  checkCards()
 
   return (
     <NavigationContainer>
-    {/*
-      initialRouteName отвечает за то какой
-      экран будет основным при запуске приложения
-    
-    */}
     <Stack.Navigator initialRouteName='Home'>
 
       <Stack.Screen
@@ -73,7 +80,6 @@ function App(): JSX.Element {
             style={{fontSize: 20, color: "black"}}
           >Список карт</Text>
         }}
-
       />
 
       <Stack.Screen
@@ -92,26 +98,10 @@ function App(): JSX.Element {
           return <Pressable
 
           onPress={async () => {
-            const createCard = async () => {
-              const randomDigitByLength = (diginLength: Number) => {
-                let emptyString = ""
-                
-                for (let i = 0; i < diginLength; i++) {
-                  emptyString += Math.floor(Math.random() * 9)
-                }
+            const db = await getDBConnection()
+            if (editorState.case == "create") await createNewCard(db);
+            if (editorState.case == "edit") await editCard(db)
 
-                return emptyString
-              } // randomDigitByLength
-              const id = randomDigitByLength(16)
-              const db = await getDBConnection()
-              let dateOfAnswer = new Date()
-              let dateOfNextAnswer = new Date()
-
-              dateOfNextAnswer.setDate(dateOfNextAnswer.getDate() + 10)
-
-              insertNewCard(db, id, "none", dateOfAnswer.toString(), dateOfNextAnswer.toString(), 1, `${editorState.header}`)
-              await writeFile(DocumentDirectoryPath + `/cards/${id}.html`, CardEditorHTML(editorState.header, editorState.front, editorState.back), "utf8")
-            }; createCard()
           }} // onPress
           >
             <Text
