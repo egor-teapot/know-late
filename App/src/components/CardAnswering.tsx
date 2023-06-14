@@ -51,6 +51,16 @@ export const CardAnswering = () => {
         document.getElementById('back').style.position = "static"
         document.getElementById('back').style.visibility = "visible"
         document.getElementById('back').style.zIndex = 1
+
+        document.getElementById('header').style.visibility = "visible"
+        document.getElementById('header').style.zIndex = 1
+        
+        document.getElementById('header').style.color = "white"
+        document.getElementById('header').style.backgroundColor = "green"
+        document.getElementById('header').style.fontSize = "30px"
+        document.getElementById('header').style.width = "100%"
+
+
       `)
       }
 
@@ -130,6 +140,7 @@ export const CardAnswering = () => {
           <Pressable
             style={{
               backgroundColor: "green",
+              height: 30
               // minHeight: 70,
             }}
             onPress={() => {              
@@ -153,13 +164,18 @@ export const CardAnswering = () => {
 
           }} // onPress Pressable
           >
-            <Text>Ответ верный</Text>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 25
+              }}
+            >Ответ верный</Text>
           </Pressable>
 
           <Pressable
             style={{
-              backgroundColor: "red",
-              // minHeight: 70,
+              backgroundColor: "#FFBB6C",
+              height: 30
             }}
             onPress={() => {
               const handleAsync = async () => {
@@ -180,7 +196,12 @@ export const CardAnswering = () => {
               setViewState("front")
             }}
           >
-          <Text>Ответ не верный</Text>
+          <Text
+            style={{
+              color: "#DD0000",
+              fontSize: 25
+            }}
+          >Ответ не верный</Text>
           </Pressable>
         </View> : null
       }
